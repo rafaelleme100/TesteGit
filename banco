@@ -1,0 +1,238 @@
+create database ensaioBD3;
+use ensaioBD3;
+
+create table curso(
+	id int primary key auto_increment,
+    nome_curso varchar(50),
+    area varchar(50)
+); 
+create table aluno(
+	id int primary key auto_increment,
+    nome varchar(50),
+    cpf varchar(20),
+    rg varchar(20),
+    dataN timestamp
+);
+create table semestre(
+	id int primary key auto_increment,
+    nome int
+);
+create table disciplina(
+	id int primary key auto_increment,
+    nome_disciplina varchar(50)
+);
+create table professor(
+	id int primary key auto_increment,
+    nome_professor varchar(50),
+    cpf varchar(20),
+    rg varchar(20)
+);
+
+create table oferecimento(
+	id int primary key auto_increment,
+    id_curso int,
+    id_semestre int,
+    id_disciplina int,
+    id_professor int,
+    
+	FOREIGN KEY (id_curso) REFERENCES curso(id),
+    FOREIGN KEY (id_semestre) REFERENCES semestre(id),
+    FOREIGN KEY (id_disciplina) REFERENCES disciplina(id),
+    FOREIGN KEY (id_professor) REFERENCES professor(id)
+);
+
+create table nota(
+	id int primary key auto_increment,
+    id_aluno int,
+    id_oferecimento int,
+    valor float,
+    
+    FOREIGN KEY (id_aluno) REFERENCES aluno(id),
+    FOREIGN KEY (id_oferecimento) REFERENCES oferecimento(id)
+);
+
+create table presenca(
+	id int primary key auto_increment,
+	id_aluno int,
+    id_oferecimento int,
+    dataPresenca timestamp,
+    
+	FOREIGN KEY (id_aluno) REFERENCES aluno(id),
+    FOREIGN KEY (id_oferecimento) REFERENCES oferecimento(id)
+);
+
+-- Dados esta informado
+-- select * from aluno;
+-- Alunos 
+insert into aluno(nome,cpf,rg,dataN) values('Bruno Thomas Fogaça','239.348.042-09','20.118.498-9',STR_TO_DATE('01-01-2018', '%d-%m-%Y')),
+										   ('Renato Henrique Oliver Peixoto','587.610.799-95','30.621.731-4',STR_TO_DATE('10-04-1996', '%d-%m-%Y')),
+                                           ('Tomás Leandro Lucca Pires','061.814.353-01','35.691.356-9',STR_TO_DATE('04-10-1996', '%d-%m-%Y')),
+                                           ('Leonardo Igor Benício Aragão','355.380.164-63','10.475.448-5',STR_TO_DATE('18-02-1998', '%d-%m-%Y')),
+                                           ('Ruan Alexandre de Paula','591.511.640-00','24.368.178-1',STR_TO_DATE('17-10-1994', '%d-%m-%Y'));
+-- Cursos
+-- select * from curso;
+
+insert into curso(nome_curso,area) values ('Informática','Exatas'),
+										  ('Medicina','Biológicas'),
+                                          ('Pedagogia','Humanas');
+--  Semestre
+-- select * from semestre;
+
+insert into semestre(nome) values('20161'),('20162'),('20171'),('20172');
+-- Disciplina
+-- select * from disciplina;
+
+insert into disciplina(nome_disciplina) values('Programação Orientada a Objetos'),('Programação Estruturada'),('Dermatologia'),('Disionomia');
+-- Professor
+-- select * from professor;
+
+insert into professor(nome_professor,cpf,rg) values('Claudio Gui','123456852-98','12352896-8'),
+												   ('Lucas Tergi','256621522-89','24545251-9');
+
+-- oferecimento
+-- select * from oferecimento;
+
+insert into oferecimento(id_curso,id_semestre,id_disciplina,id_professor) values ('1','2','2','1'),
+																				 ('1','2','1','1');
+                                                                                 
+-- nota
+-- select * from nota;
+
+insert into nota(id_aluno,id_oferecimento,valor) values('1','1','10'),
+													   ('3','1','6.5'),
+													   ('1','1','9'),
+                                                       ('3','1','9.5');
+                                                       
+-- presenca
+-- select * from presenca;
+
+insert into presenca(id_aluno,id_oferecimento,dataPresenca) values ('2','2',STR_TO_DATE('20-03-2017', '%d-%m-%Y')),
+                                                                   ('2','2',STR_TO_DATE('20-03-2017', '%d-%m-%Y')),
+                                                                   ('1','1',STR_TO_DATE('20-03-2017', '%d-%m-%Y'));
+
+-- 01: O Nome dos Alunos que nunca foram para a aula	
+select a.nome from aluno as a 
+			    left join presenca as p on a.id = p.id_aluno
+                where p.id_aluno is null;
+                
+-- 02: O Nome dos professores que estão com aulas alocadas
+select * from oferecimento;
+select * from disciplina;
+
+select  p.nome_professor, d.nome_disciplina from professor as p
+		join oferecimento as o on o.id_professor = p.id
+        join disciplina as d on d.id = o.id_disciplina;
+-- 03: O Nome dos alunos menores de idade
+select * from disciplina;
+select * from aluno where dataN > STR_TO_DATE('09-04-2000', '%d-%m-%Y');
+-- 04: As Disciplina que termina com "ia"
+select d.nome_disciplina from disciplina as d where d.nome_disciplina like "%ia";
+
+-- 05: Os Cursos que não possuem alunos matriculados
+
+select c.nome_curso from curso as c 
+			    left join oferecimento as o on c.id = o.id_curso
+                where o.id_curso is null;
+-- 06: A lista completa contendo curso,semestre,disciplica e nome de cada um dos alunos
+select * from disciplina;
+select * from semestre;
+select * from presenca;
+select * from oferecimento;
+
+select  a.nome, c.nome_curso, s.nome, d.nome_disciplina 
+  from oferecimento as o
+			join curso as c on c.id = o.id_curso
+			join semestre as s on s.id = o.id_semestre
+			join disciplina as d on d.id = o.id_disciplina
+            
+            join presenca as p on p.id_oferecimento = o.id
+            join aluno as a on a.id = p.id_aluno;
+            
+-- PROVA BANCO DE DADOS 03
+
+-- select * from aluno;
+-- 01) Mostrar todos os alunos que fazem aniverssário no mês corrente(Atual).
+insert into aluno(nome,cpf,rg,dataN) values ('Barreto',15552,15151,STR_TO_DATE('25-05-2018','%d-%m-%Y'));
+insert into aluno(nome,cpf,rg,dataN) values ('Lucas',15552,15151,STR_TO_DATE('25-05-2018','%d-%m-%Y'));
+insert into aluno(nome,cpf,rg,dataN) values ('Rafael',15552,15151,STR_TO_DATE('25-05-2018','%d-%m-%Y'));
+
+select * from exercicio_01;
+
+create view exercicio_01 as
+select aluno.nome from aluno
+	where dataN between STR_TO_DATE('01-05-2018', '%d-%m-%Y') and STR_TO_DATE('31-05-2018', '%d-%m-%Y');
+
+-- 02) Contar a quantidade de alunos por disciplina, mostrando nome de cada disciplina
+select * from presenca;
+
+select d.nome_disciplina, contador 
+  from disciplina as d,
+       oferecimento as o, 
+       (select p.id_aluno as idAluno , count(p.dataPresenca) as contador, a.id
+          from aluno as a , presenca as p) as tab_2
+	where  o.id_disciplina = d.id and tab_2.idAluno = tab_2.id; 
+	
+
+CREATE VIEW TEMP2 AS 
+SELECT presenca.id_aluno, oferecimento.id_disciplina
+  FROM presenca
+     , oferecimento
+ WHERE oferecimento.id = presenca.id_oferecimento
+ GROUP BY presenca.id_aluno, oferecimento.id_disciplina;
+
+create view exercicio_2 as 
+SELECT disciplina.nome_disciplina, count(temp2.id_aluno)
+  FROM temp2,
+       disciplina
+ WHERE temp2.id_disciplina = disciplina.id
+ GROUP BY disciplina.nome_disciplina;
+
+
+-- 03) Mostrar o aluno mas velho
+select * from exercicio_03;
+ 
+create view exercicio_03 as
+ SELECT * FROM aluno
+  WHERE dataN = (select min(dataN) from aluno);
+ 
+ 
+-- 04) Criar a lista de chamada, separando cada oferecimento com suas informações completas, 
+-- bem como a nota e as presenças de cada aluno.
+
+
+select*from exercicio_04;
+
+create view exercicio_04 as
+select curso.nome_curso, aluno.nome, count(presenca.dataPresenca)  from oferecimento ,presenca ,aluno ,curso
+	where curso.id = oferecimento.id_curso and 
+		  oferecimento.id = presenca.id_oferecimento and
+          aluno.id = presenca.id_aluno
+          group by curso.nome_curso, aluno.nome
+          having count(presenca.dataPresenca);
+
+-- 05) Feitas esta consulta, Arma em cada consulta em uma view para posteriormente
+-- 
+select * from exercicio_01;
+select * from exercicio_2;
+select * from exercicio_03;
+select * from exercicio_04;
+
+
+            
+          
+		 
+
+                                           
+                                           
+                                           
+                                           
+                                           
+                                           
+                                           
+                                           
+                                           
+                                           
+                                           
+                                           
+                                           
+                                           
