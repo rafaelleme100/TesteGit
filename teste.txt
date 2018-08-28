@@ -1,7 +1,4 @@
-<<<<<<< HEAD
-isso é um teste
-
 ...
-=======
+
 isso é um teste falso
->>>>>>> d869bf602116eb1e6ee83ca930eabdf33cc2825d
+
